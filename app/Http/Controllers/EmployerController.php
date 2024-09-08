@@ -110,6 +110,7 @@ class EmployerController extends Controller
     public function destroy(Employer $employer)
     {
         try {
+            Cache::forget('employers:' . $employer->id);
             $employer->delete();
             Cache::forget('employers:all');
         } catch (QueryException $ex) {
