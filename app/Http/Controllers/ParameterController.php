@@ -14,8 +14,6 @@ class ParameterController extends Controller
     {
         $parameters = Parameter::all();
 
-        //dd($employers);
-
         return view('parameter', [
             'parameters' => $parameters,
         ]);

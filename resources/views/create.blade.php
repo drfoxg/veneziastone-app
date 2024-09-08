@@ -26,26 +26,26 @@
 
                             <div class="form-group">
                                 <label for="name" class="mr-2">Имя:&nbsp;</label>
-                                <input type="text" class="form-control" autocomplete="off" name="name" id="name" placeholder="Имя" required="" pattern="^.+$" value="">
+                                <input type="text" class="form-control" autocomplete="off" name="name" id="name" placeholder="Имя" required="" pattern="^.+$" value="{{old('name')}}">
                             </div>
                             <div class="form-group">
                                 <label for="age" class="mr-2">Возраст (целое число):&nbsp;</label>
-                                <input type="text" class="form-control" autocomplete="off" name="age" id="age" placeholder="Возраста" required="" pattern="[1-9][0-9]*" value="">
+                                <input type="text" class="form-control" autocomplete="off" name="age" id="age" placeholder="Возраста" required="" pattern="[1-9][0-9]*" value="{{old('age')}}">
                             </div>
 
                             <div class="form-group">
                                 <label for="is_car" class="mr-2">Есть машина (Да/Нет):&nbsp;</label>
-                                <input type="text" class="form-control" autocomplete="off" name="is_car" id="is_car" placeholder="" required="" pattern="^(?:Да|Нет|да|нет)$" value="">
+                                <input type="text" class="form-control" autocomplete="off" name="is_car" id="is_car" placeholder="" required="" pattern="^(?:Да|Нет|да|нет)$" value="{{old('is_car')}}">
                             </div>
 
                             <div class="form-group">
                                 <label for="children" class="mr-2">Дети (число от 0):&nbsp;</label>
-                                <input type="text" class="form-control" autocomplete="off" name="children" id="children" placeholder="" required="" pattern="[0]|[1-9][0-9]*" value="">
+                                <input type="text" class="form-control" autocomplete="off" name="children" id="children" placeholder="" required="" pattern="[0]|[1-9][0-9]*" value="{{old('children')}}">
                             </div>
 
                             <div class="form-group">
                                 <label for="salary" class="mr-2">Оклад:&nbsp;</label>
-                                <input type="number" class="form-control" autocomplete="off" name="salary" id="salary" placeholder="" required="" pattern="[1-9][0-9]*" value="">
+                                <input type="number" class="form-control" autocomplete="off" name="salary" id="salary" placeholder="" required="" pattern="[1-9][0-9]*" value="{{old('salary')}}">
                             </div>
                             <br />
                             <div class="d-flex flex-row justify-content-end">

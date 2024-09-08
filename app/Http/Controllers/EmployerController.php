@@ -83,8 +83,6 @@ class EmployerController extends Controller
             $employer = Cache::get('employers:' . $id);
         }
 
-        //dd($employer);
-
         return $employer??abort(404);
     }
 
