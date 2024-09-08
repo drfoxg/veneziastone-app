@@ -16,9 +16,6 @@
             <div class="row my-4">
                 <div class="col mx-auto">
                     <h2>Добавить сотрудника</h2>
-                    @isset($employer)
-                    <p>Сотрудник: {{$employer}}</p>
-                    @endisset
 
                     <form action="{{route($routeName)}}" method="POST" enctype="multipart/form-data" class="p-1">
                         @csrf

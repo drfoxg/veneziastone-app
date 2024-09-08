@@ -38,9 +38,7 @@ class EmployerController extends Controller
      */
     public function create()
     {
-        $employer = 'Василий';
         return view('create', [
-            'employer' => $employer,
             'routeName' => 'store',
             'routeBack' => 'index',
         ]);
