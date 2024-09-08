@@ -16,22 +16,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-/*
-Route::get('/', function () {
-    return view('employer');
-});
-*/
-
-
-Route::resource('/', EmployerController::class);
-
-Route::delete('/{employer}', [EmployerController::class, 'destroy'])->name('destroy');
-Route::get('/{id}', [EmployerController::class, 'show'])->name('show');
-
-Route::resource('/parameters', ParameterController::class);
-
-Route::get('/cart', [CartController::class, 'makeOrder']);
-
-Route::get('/test', function () {
+Route::get('/welcome', function () {
     return view('welcome');
 });
+
+Route::resource('/parameters', ParameterController::class);
+//Route::get('/parameters', [ParameterController::class, 'index'])->name('parameters.index');
+//Route::resource('/', EmployerController::class)->middleware('global.cache:Employer');
+
+Route::get('/', [EmployerController::class, 'index'])->name('index')->middleware('global.cache:Employer');
+Route::post('/', [EmployerController::class, 'store'])->name('store');
+Route::get('/create', [EmployerController::class, 'create'])->name('create');
+Route::get('/{id}', [EmployerController::class, 'show'])->name('show');
+Route::delete('/{employer}', [EmployerController::class, 'destroy'])->name('destroy');
+
+
+Route::get('/cart', [CartController::class, 'makeOrder']);

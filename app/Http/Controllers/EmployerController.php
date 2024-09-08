@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 
 class EmployerController extends Controller
 {
@@ -15,10 +16,17 @@ class EmployerController extends Controller
      */
     public function index()
     {
+        $employers = resolve(Employer::class);
 
-        $employers = Cache::rememberForever('employers:all', function () {
-            return Employer::all();
-        });
+        if($employers instanceof Collection) {
+            return view('employer', [
+                'employers' => $employers,
+            ]);
+        }
+
+        if(!$employers->exists) {
+            $employers = Employer::all();
+        }
 
         return view('employer', [
             'employers' => $employers,
@@ -71,7 +79,6 @@ class EmployerController extends Controller
         }
 
         return redirect()->route('index')->withSuccess('Сотрудник был добавлен успешно.');
-
     }
 
     /**
