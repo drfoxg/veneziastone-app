@@ -22,6 +22,8 @@ class Employer extends Model
 
     public function getPaycheckAttribute()
     {
+
+        //dd($this->parametr);
         // заплата = оклад - НДВЛ
         if ($this->parametr) {
 
@@ -48,7 +50,12 @@ class Employer extends Model
             // аренда из зарплаты за машину
             if ($this->is_car) {
                 $salary -= $car_rent;
+                if ($salary < 0) {
+                    $salary = 0;
+                }
             }
+
+            //dd($salary);
 
             return $salary;
         }

@@ -12,9 +12,21 @@
             <div class="row my-4">
                 <h1 class="">Венеция стоун - Начисление зарплаты</h1>
                 <a href="/parameters">Параметры</a>
+                <a href="/create">Новый сотрудник</a>
             </div>
             <div class="row my-4">
                 <div class="col mx-auto">
+                    @if (session()->has('success'))
+                    <div class="alert alert-success rounded">
+                        {{ session()->get('success') }}
+                    </div>
+                    @endif
+                    @if (session()->has('failure'))
+                    <div class="alert alert-warning rounded">
+                        {{ session()->get('failure') }}
+                    </div>
+                    @endif
+
                     @isset($employers)
                         @if ($employers->isEmpty())
                         <div>
@@ -31,6 +43,7 @@
                                 <th scope="col">Дети</th>
                                 <th scope="col">Оклад</th>
                                 <th scope="col">Зарплата</th>
+                                <th scope="col">Действия</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -43,6 +56,13 @@
                                 <td>{{$tag->children}}</td>
                                 <td>{{$tag->salary}} {{$tag->currency_name}}</td>
                                 <td>{{$tag->paycheck}} {{$tag->currency_name}}</td>
+                                <td>
+                                    <form action="{{ route('destroy', $tag->id) }}" method="post">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+                                    </form>
+                                </td>
                               </tr>
                             </tbody>
                         @endforeach

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Employer;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class EmployerController extends Controller
 {
@@ -13,9 +16,9 @@ class EmployerController extends Controller
     public function index()
     {
 
-        $employers = Employer::all();
-
-        //dd($employers);
+        $employers = Cache::rememberForever('employers:all', function () {
+            return Employer::all();
+        });
 
         return view('employer', [
             'employers' => $employers,
@@ -27,7 +30,12 @@ class EmployerController extends Controller
      */
     public function create()
     {
-        //
+        $employer = 'Василий';
+        return view('create', [
+            'employer' => $employer,
+            'routeName' => 'store',
+            'routeBack' => 'index',
+        ]);
     }
 
     /**
@@ -35,15 +43,49 @@ class EmployerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $this->validate($request, [
+            'name' => 'required|string|min:1|max:100',
+            'age' => 'required|integer|min:1|max:200',
+            'is_car' => ["required", "regex:/^(?:Да|Нет|да|нет)$/"],
+            'children' => 'required|integer|min:0|max:100',
+            'salary' => 'required|integer|min:1|max:99999999',
+        ]);
+
+        try {
+
+            $isCar = Str::lower($data['is_car']);
+
+            if ($isCar == "да") {
+                $data['is_car'] = 1;
+            } else {
+                $data['is_car'] = 0;
+            }
+
+            $employer = Employer::create($data);
+
+            Cache::put('employers:' . $employer->id, $employer);
+            Cache::forget('employers:all');
+
+        } catch (QueryException $ex) {
+            return redirect()->route('index')->withFailure('Что-то пошло не так.');
+        }
+
+        return redirect()->route('index')->withSuccess('Сотрудник был добавлен успешно.');
+
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Employer $employer)
+    public function show($id)
     {
-        //
+        if (Cache::has('employers:' . $id)) {
+            $employer = Cache::get('employers:' . $id);
+        }
+
+        //dd($employer);
+
+        return $employer??abort(404);
     }
 
     /**
@@ -67,6 +109,13 @@ class EmployerController extends Controller
      */
     public function destroy(Employer $employer)
     {
-        //
+        try {
+            $employer->delete();
+            Cache::forget('employers:all');
+        } catch (QueryException $ex) {
+            return redirect()->route('index')->withFailure('Сотрудник не был удален из-за ограничений целостности.');
+        }
+
+        return redirect()->route('index')->withSuccess('Сотрудник был удален успешно.');
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EmployerController;
 use App\Http\Controllers\ParameterController;
+use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,4 +24,14 @@ Route::get('/', function () {
 
 
 Route::resource('/', EmployerController::class);
+
+Route::delete('/{employer}', [EmployerController::class, 'destroy'])->name('destroy');
+Route::get('/{id}', [EmployerController::class, 'show'])->name('show');
+
 Route::resource('/parameters', ParameterController::class);
+
+Route::get('/cart', [CartController::class, 'makeOrder']);
+
+Route::get('/test', function () {
+    return view('welcome');
+});
