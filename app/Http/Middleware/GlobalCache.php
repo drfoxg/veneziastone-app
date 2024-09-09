@@ -14,21 +14,73 @@ class GlobalCache
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
+    private $model;
+    private $modelClass;
+    private Request $request;
+
     public function handle(Request $request, Closure $next, string $modelClass = null): Response
     {
+        $this->modelClass = $modelClass;
+        $this->request = $request;
+
         if (isset($modelClass)) {
-            $modelClass = 'App\\Models\\'. $modelClass;
-            $model = new \ReflectionClass($modelClass);
-            $inst = $model->newInstance();
+            $model = $this->createModel($modelClass);
+            $this->model = $model;
+        } else {
+            return $next($request);
+        }
 
-            $result  = Cache::rememberForever($modelClass . ':all', function() use($inst) {
-                return $inst::all();
-            });
+        $command = $this->getLastName($request);
 
-            app()->instance($modelClass, $result);
-
+        $result = null;
+        switch ($command) {
+            case 'index':
+                $result = $this->getCacheIndex();
+                $request->merge(['model' => $result]);
+                break;
+            case 'show':
+                $result = $this->getCacheShow();
+                $request->merge(['modelItem' => $result]);
+                break;
+            default:
+                return $next($request);
         }
 
         return $next($request);
+    }
+
+    private function getCacheIndex()
+    {
+        $result = null;
+
+        $model = $this->model;
+        $result = Cache::rememberForever("{$this->modelClass}:all", function() use($model) {
+            return $model::all();
+        });
+
+        return $result;
+    }
+
+    private function getCacheShow()
+    {
+        $result = null;
+
+        if (Cache::has("{$this->modelClass}:{$this->request->id}")) {
+            $result = Cache::get("{$this->modelClass}:{$this->request->id}");
+        }
+
+        return $result;
+    }
+
+
+    private function createModel(string $modelClass)
+    {
+        $modelClass = "App\\Models\\{$modelClass}";
+        return new $modelClass();
+    }
+
+    private function getLastName(Request $request)
+    {
+        return last(explode('.', $request->route()->getName()));
     }
 }

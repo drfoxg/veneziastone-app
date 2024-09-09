@@ -11,12 +11,12 @@ use Illuminate\Support\Collection;
 
 class EmployerController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    private const CACHE_ITEM = 'Employer:';
+    private const CACHE_ALL = 'Employer:all';
+
+    public function index(Request $request)
     {
-        $employers = resolve(Employer::class);
+        $employers = $request->input('model');
 
         if($employers instanceof Collection) {
             return view('employer', [
@@ -24,7 +24,7 @@ class EmployerController extends Controller
             ]);
         }
 
-        if(!$employers->exists) {
+        if(!$employers) {
             $employers = Employer::all();
         }
 
@@ -33,9 +33,6 @@ class EmployerController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('create', [
@@ -44,9 +41,6 @@ class EmployerController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $data = $this->validate($request, [
@@ -69,8 +63,8 @@ class EmployerController extends Controller
 
             $employer = Employer::create($data);
 
-            Cache::put('employers:' . $employer->id, $employer);
-            Cache::forget('employers:all');
+            Cache::put(EmployerController::CACHE_ITEM . $employer->id, $employer);
+            Cache::forget(EmployerController::CACHE_ALL);
 
         } catch (QueryException $ex) {
             return redirect()->route('index')->withFailure('Что-то пошло не так.');
@@ -79,21 +73,17 @@ class EmployerController extends Controller
         return redirect()->route('index')->withSuccess('Сотрудник был добавлен успешно.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        if (Cache::has('employers:' . $id)) {
-            $employer = Cache::get('employers:' . $id);
+        $employer = $request->input('modelItem');
+
+        if (!$employer) {
+            $employer = Employer::find($id);
         }
 
         return $employer??abort(404);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Employer $employer)
     {
         //
@@ -113,9 +103,9 @@ class EmployerController extends Controller
     public function destroy(Employer $employer)
     {
         try {
-            Cache::forget('employers:' . $employer->id);
             $employer->delete();
-            Cache::forget('employers:all');
+            Cache::forget(EmployerController::CACHE_ITEM . $employer->id);
+            Cache::forget(EmployerController::CACHE_ALL);
         } catch (QueryException $ex) {
             return redirect()->route('index')->withFailure('Сотрудник не был удален из-за ограничений целостности.');
         }

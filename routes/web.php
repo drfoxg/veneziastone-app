@@ -20,15 +20,13 @@ Route::get('/welcome', function () {
     return view('welcome');
 });
 
-Route::resource('/parameters', ParameterController::class);
-//Route::get('/parameters', [ParameterController::class, 'index'])->name('parameters.index');
-//Route::resource('/', EmployerController::class)->middleware('global.cache:Employer');
+Route::resource('/parameters', ParameterController::class)->middleware('global.cache:Parameter');
 
 Route::get('/', [EmployerController::class, 'index'])->name('index')->middleware('global.cache:Employer');
 Route::post('/', [EmployerController::class, 'store'])->name('store');
 Route::get('/create', [EmployerController::class, 'create'])->name('create');
-Route::get('/{id}', [EmployerController::class, 'show'])->name('show');
+Route::get('/{id}', [EmployerController::class, 'show'])->name('show')->middleware('global.cache:Employer');
 Route::delete('/{employer}', [EmployerController::class, 'destroy'])->name('destroy');
 
 
-Route::get('/cart', [CartController::class, 'makeOrder']);
+//Route::get('/cart', [CartController::class, 'makeOrder']);
