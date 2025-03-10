@@ -30,15 +30,15 @@ services:
         restart: unless-stopped
         tty: true
         ports:
-    #        - 8888:80
-    #        - 448:443
+            #        - 8888:80
+            #        - 448:443
             - 87.251.78.17:80:80
             - 87.251.78.17:443:443
         volumes:
             - ./:/var/www
             - ./nginx/conf.d/:/etc/nginx/conf.d/
-    #    extra_hosts:
-    #        - pdweb.local:87.251.78.17
+        #    extra_hosts:
+        #        - pdweb.local:87.251.78.17
         networks:
             - app-cache-network
 
