@@ -6,8 +6,6 @@ COPY composer.lock composer.json /var/www/
 # Set working directory
 WORKDIR /var/www
 
-
-
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -18,6 +16,8 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libonig5 \
     libonig-dev \
+    libpng-dev \
+    libpq-dev \
     locales \
     zip \
     jpegoptim optipng pngquant gifsicle \
@@ -60,10 +60,12 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x -o /tmp/nodesource_setup.sh &
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install extensions
-RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
-#RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
-RUN docker-php-ext-configure gd
-RUN docker-php-ext-install gd
+RUN docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-configure gd \
+    && docker-php-ext-install pdo pgsql pdo_pgsql pdo_mysql mbstring zip exif pcntl bcmath gd  
+    
+RUN pecl install -o -f xdebug \
+    && docker-php-ext-enable xdebug
 
 # Install Redis Extension
 #RUN apk add autoconf && pecl install -o -f redis \
